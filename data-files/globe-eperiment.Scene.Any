@@ -1,0 +1,112 @@
+/* -*- c++ -*- */
+{ 
+    name = "Globe Experiment"; 
+
+    entities = { 
+        cameraExt = CameraExtFreelook {             
+            frame = CFrame::fromXYZYPRDegrees(0, 5, -20, 180, -10, 15);
+
+            depthOfFieldSettings = DepthOfFieldSettings {
+                model = "ARTIST";
+                enabled = false;
+                nearSharpPlaneZ = -1.0;
+            };
+
+            motionBlurSettings = MotionBlurSettings {
+                enabled = true;
+                exposureFraction = 0.25;
+            };
+        }; 
+        
+        skybox = Skybox { 
+            texture = "skybox/fcolor_mandel_2_*.png"; 
+        };
+        
+        sun = Light { 
+            attenuation = (0, 0, 1); 
+            bulbPower = Power3(2.5e+6); 
+            shadowsEnabled = true; 
+			shadowMapBias = 0.01;
+            track = lookAt(Point3(-200, 20, 40), Point3(0, 0, 0));
+            shadowMapSize = Vector2int16(2048, 2048); 
+            spotHalfAngleDegrees = 4; 
+            rectangular = true; 
+            type = "SPOT"; 
+        };
+
+		//*
+		globe = Globe {
+			model = "globeModel"
+		};
+		//*/
+
+		particle = Particle {
+			model = "particleModel";
+			frame = CFrame::fromXYZYPRDegrees(0, 0, 0, 0, 0, 0);
+		};
+
+		/*
+		earth = Globe {
+			model = "earthModel";
+		};
+        //*/
+
+		plane_tangeant = VisibleEntity {
+			model = "circle_tan";
+			expressiveLightScatteringProperties = ExpressiveLightScatteringProperties {
+				castsShadows = false;
+				receivesShadows = true;
+			};
+		};
+
+		plane_magick = VisibleEntity {
+			model = "circle_mag";
+			expressiveLightScatteringProperties = ExpressiveLightScatteringProperties {
+				castsShadows = false;
+				receivesShadows = true;
+			};
+		};
+    }; 
+        
+    models = {
+        globeModel = ArticulatedModel::Specification { 
+            filename = "globe/globe.obj"; 
+            scale = 6.356; // polar radius in million meters; source: wikipedia
+        };
+
+		earthModel = ArticulatedModel::Specificaiton {
+			filename = "earth/earth.obj";
+			scale = 0.0184; // roughly equates to a radius of 6.356
+		};
+
+		particleModel = ArticulatedModel::Specification {
+			filename = "particle/particle.obj";
+			scale = 1;
+		};
+
+		plane = ArticulatedModel::Specification {
+			filename = "plane/plane.obj";
+			scale = 1;
+		};
+
+		circle_tan = ArticulatedModel::Specification {
+			filename = "plane/circle-tan.obj";
+			scale = 1;
+		};
+
+		circle_mag = ArticulatedModel::Specification {
+			filename = "plane/circle-mag.obj";
+			scale = 1;
+		};
+    };
+    
+    lightingEnvironment = LightingEnvironment { 
+        
+        environmentMap = Texture::Specification { 
+            filename = "skybox/fcolor_mandel_2_*.png";
+            encoding = Texture::Encoding {
+                readMultiplyFirst = 0.4;
+            };
+        };
+    }; 
+ } 
