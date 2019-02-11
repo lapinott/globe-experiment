@@ -1,9 +1,8 @@
-# globe-experiment
-Globe experiment
+# Globe experiment
 
 Dependencies: G3D - https://casual-effects.com/g3d/www/index.html
 
-Working distribution:
+Release:
 
 - A working build is at the root of this project: unzip globe-experiment.rar anywhere and run.
 
