@@ -1,13 +1,13 @@
 Application Log
-Start: Mon Feb 11 03:46:08 2019
+Start: Wed Feb 13 00:37:19 2019
 
 WARNING: AudioDevice is not enabled. Set G3DSpecification::audio = true before invoking initGLG3D() to enable audio.
-Initializing System::findDataFile took 0.005755s
+Initializing System::findDataFile took 0.003865s
 
 Entering GApp::GApp()
 cwd = C:\Users\jumat\source\repos\globe-experiment\data-files
 System::setAppDataDir("C:\Users\jumat\source\repos\globe-experiment\data-files/data-files")
-Initializing System::findDataFile took 0.000613s
+Initializing System::findDataFile took 0.000859s
 Setting video mode
 wglSwapIntervalEXT(0);
 Setting initial rendering state.
@@ -696,6 +696,10 @@ C:/Users/jumat/source/repos/globe-experiment/data-files/./plane/circle-mag.mtl
 C:/Users/jumat/source/repos/globe-experiment/data-files/./plane/circle-mag.obj
 C:/Users/jumat/source/repos/globe-experiment/data-files/./plane/circle-tan.mtl
 C:/Users/jumat/source/repos/globe-experiment/data-files/./plane/circle-tan.obj
+C:/Users/jumat/source/repos/globe-experiment/data-files/./plane/plane-geodesic.mtl
+C:/Users/jumat/source/repos/globe-experiment/data-files/./plane/plane-geodesic.obj
+C:/Users/jumat/source/repos/globe-experiment/data-files/./plane/plane-parallel.mtl
+C:/Users/jumat/source/repos/globe-experiment/data-files/./plane/plane-parallel.obj
 C:/Users/jumat/source/repos/globe-experiment/data-files/./skybox
 C:/Users/jumat/source/repos/globe-experiment/data-files/./skybox/fcolor_mandel_2_down.png
 C:/Users/jumat/source/repos/globe-experiment/data-files/./skybox/fcolor_mandel_2_east.png
@@ -738,6 +742,12 @@ C:/Users/jumat/source/repos/globe-experiment/data-files/model/sportsCar
 C:/Users/jumat/source/repos/globe-experiment/data-files/model/teapot
 C:/Users/jumat/source/repos/globe-experiment/data-files/model/truckwheel
 C:/Users/jumat/source/repos/globe-experiment/data-files/model/viper
+C:/Users/jumat/source/repos/globe-experiment/data-files/plane
+C:/Users/jumat/source/repos/globe-experiment/data-files/plane
+C:/Users/jumat/source/repos/globe-experiment/data-files/plane/plane-geodesic.mtl
+C:/Users/jumat/source/repos/globe-experiment/data-files/plane/plane-geodesic.obj
+C:/Users/jumat/source/repos/globe-experiment/data-files/plane/plane-parallel.mtl
+C:/Users/jumat/source/repos/globe-experiment/data-files/plane/plane-parallel.obj
 C:/Users/jumat/source/repos/globe-experiment/data-files/rustymetal
 C:/Users/jumat/source/repos/globe-experiment/data-files/scene
 C:/Users/jumat/source/repos/globe-experiment/data-files/shader

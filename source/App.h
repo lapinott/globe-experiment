@@ -28,6 +28,9 @@ protected:
 	shared_ptr<VisibleEntity> m_plane_tangeant;
 	shared_ptr<VisibleEntity> m_plane_magick;
 
+	shared_ptr<VisibleEntity> m_plane_geodesic;
+	shared_ptr<VisibleEntity> m_plane_parallel;
+
 	void spawnParticle(UserInput* ui);
 
 	void killParticles();
@@ -43,6 +46,11 @@ protected:
 
 	CFrame getTangeantPlaneFrame() const;
 	CFrame getMagickPlaneFrame() const;
+
+	void makePlaneGeodesic();
+	unsigned m_pgc = 0;
+	void makePlaneParallel();
+	unsigned m_ppc = 0;
 
 	shared_ptr<GFont> m_font;
 

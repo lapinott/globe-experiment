@@ -75,15 +75,10 @@ void App::onInit() {
 
     loadScene("Globe Experiment");
 
-	Array<shared_ptr<CameraExtFreelook>> cext;
-	scene()->getTypedEntityArray<CameraExtFreelook>(cext);
-	if (cext.size() != 0) {
-		m_camera = cext[0];
-		setActiveCamera(m_camera);
-		scene()->removeEntity("cameraExt");
-	}
-
-	UserControlledEntity::add(cext[0]);
+	m_camera = scene()->typedEntity<CameraExtFreelook>("cameraExt");
+	setActiveCamera(m_camera);
+	scene()->removeEntity("cameraExt");
+	UserControlledEntity::add(m_camera);
 
 	m_particle = scene()->typedEntity<Particle>("particle");
 	scene()->removeEntity("particle");
@@ -94,6 +89,11 @@ void App::onInit() {
 	m_plane_magick = scene()->typedEntity<VisibleEntity>("plane_magick");
 	m_plane_tangeant->setVisible(false);
 	m_plane_magick->setVisible(false);
+
+	m_plane_geodesic = scene()->typedEntity<VisibleEntity>("plane_geodesic");
+	m_plane_parallel = scene()->typedEntity<VisibleEntity>("plane_parallel");
+	m_plane_geodesic->setVisible(false);
+	m_plane_parallel->setVisible(false);
 }
 
 
@@ -127,8 +127,15 @@ void App::onUserInput(UserInput* ui) {
     // ones that changed in the last frame.
 	UserControlledEntity::onUserInput(ui);
 
-	if (userInput->keyPressed(GKey::LEFT_MOUSE))
-		spawnParticle(ui);
+	if (userInput->keyPressed(GKey::LEFT_MOUSE)) {
+		if (!userInput->keyDown(GKey::LCTRL))
+			spawnParticle(ui);
+		else {
+			makePlaneGeodesic();
+			makePlaneParallel();
+		}
+
+	}
 
 	if (userInput->keyPressed(GKey::GKey('k'))) {
 		killParticles();
@@ -147,10 +154,20 @@ void App::onUserInput(UserInput* ui) {
 		m_write_ui = !m_write_ui;
 	}
 
+	if (userInput->keyPressed(GKey::GKey('l'))) {
+		Array<shared_ptr<Entity>> ee;
+		scene()->getEntityArray(ee);
+		for (const shared_ptr<Entity>& e : ee) {
+			if (e->name().find(String("plane_")) == 0) {
+				scene()->remove(e);
+			}
+		}
+	}
+
 	// mouse ray x globe
 	m_mrig = mouseRayIntersectsGlobe(ui, m_mrig_ray, m_mrig_time);
 
-	// planes display
+	// small planes display
 	if (m_mrig && !userInput->keyReleased(GKey::SPACE)) {
 		if (userInput->keyDown(GKey::SPACE)) {
 			m_plane_tangeant->setVisible(true);
@@ -313,23 +330,84 @@ void App::massSpawnParticlesRandom() {
 	}
 }
 
+void App::makePlaneGeodesic() {
+
+	if (m_mrig) {
+		Point3 intersection = m_mrig_ray.origin() + (m_mrig_ray.direction() * m_mrig_time);
+		Matrix3 r;
+		Vector3 x = intersection.unit();
+		Vector3 z = (Vector3(0, 1, 0).cross(x)).unit();
+		Vector3 y = x.cross(z);
+		r.setColumn(0, x);
+		r.setColumn(1, y);
+		r.setColumn(2, z);
+		Point3 t = Point3::zero();
+
+		ArticulatedModel::Specification spec;
+		spec.filename = "plane/plane-geodesic.obj";
+		spec.scale = 1.0f;
+		shared_ptr<ArticulatedModel> mdl = ArticulatedModel::create(spec);
+
+		shared_ptr<VisibleEntity> plane = VisibleEntity::create(
+			String("plane_geodesic_" + String(std::to_string(m_pgc++))),
+			scene().get(),
+			mdl,
+			CFrame(r, t),
+			shared_ptr<Entity::Track>(),
+			false,
+			false,
+			true,
+			Surface::ExpressiveLightScatteringProperties{ false, false }
+		);
+		scene()->insert(plane);
+	}
+}
+
+void App::makePlaneParallel() {
+	if (m_mrig) {
+		Point3 intersection = m_mrig_ray.origin() + (m_mrig_ray.direction() * m_mrig_time);
+
+		ArticulatedModel::Specification spec;
+		spec.filename = "plane/plane-parallel.obj";
+		spec.scale = (Vector3(intersection.x, 0, intersection.z).length() + 0.644) / 7;
+		shared_ptr<ArticulatedModel> mdl = ArticulatedModel::create(spec);
+
+		shared_ptr<VisibleEntity> plane = VisibleEntity::create(
+			String("plane_parallel_" + String(std::to_string(m_pgc++))),
+			scene().get(),
+			mdl,
+			CFrame(Matrix3::identity(), Point3(0, intersection.y, 0)),
+			shared_ptr<Entity::Track>(),
+			false,
+			false,
+			true,
+			Surface::ExpressiveLightScatteringProperties{ false, false }
+		);
+		scene()->insert(plane);
+	}
+}
+
 void App::writeUI() {
 	m_font->draw2D(renderDevice, "UI: u",
-		Point2(renderDevice->width() - 450.0f, 25.0f), 20.0f, Color4(Color3::red(), 0.7), Color4(Color3::black(), 0.7));
+		Point2(renderDevice->width() - 480.0f, 25.0f), 18.0f, Color4(Color3::red(), 0.7), Color4(Color3::black(), 0.7));
 	m_font->draw2D(renderDevice, "Camera: right mouse + w/a/s/d/q/e",
-		Point2(renderDevice->width() - 450.0f, 55.0f), 20.0f, Color4(Color3::red(), 0.7), Color4(Color3::black(), 0.7));
+		Point2(renderDevice->width() - 480.0f, 55.0f), 18.0f, Color4(Color3::red(), 0.7), Color4(Color3::black(), 0.7));
 	m_font->draw2D(renderDevice, "Spawn particle: click",
-		Point2(renderDevice->width() - 450.0f, 85.0f), 20.0f, Color4(Color3::red(), 0.7), Color4(Color3::black(), 0.7));
+		Point2(renderDevice->width() - 480.0f, 85.0f), 18.0f, Color4(Color3::red(), 0.7), Color4(Color3::black(), 0.7));
 	m_font->draw2D(renderDevice, "Mass spawn particles: p",
-		Point2(renderDevice->width() - 450.0f, 115.0f), 20.0f, Color4(Color3::red(), 0.7), Color4(Color3::black(), 0.7));
+		Point2(renderDevice->width() - 480.0f, 115.0f), 18.0f, Color4(Color3::red(), 0.7), Color4(Color3::black(), 0.7));
 	m_font->draw2D(renderDevice, "Kill particles: k",
-		Point2(renderDevice->width() - 450.0f, 145.0f), 20.0f, Color4(Color3::red(), 0.7), Color4(Color3::black(), 0.7));
-	m_font->draw2D(renderDevice, "Display planes: space",
-		Point2(renderDevice->width() - 450.0f, 175.0f), 20.0f, Color4(Color3::red(), 0.7), Color4(Color3::black(), 0.7));
+		Point2(renderDevice->width() - 480.0f, 145.0f), 18.0f, Color4(Color3::red(), 0.7), Color4(Color3::black(), 0.7));
+	m_font->draw2D(renderDevice, "Display tangeant/magick planes: space",
+		Point2(renderDevice->width() - 480.0f, 175.0f), 18.0f, Color4(Color3::red(), 0.7), Color4(Color3::black(), 0.7));
+	m_font->draw2D(renderDevice, "Create geodesic/parallel planes: lctrl + click",
+		Point2(renderDevice->width() - 480.0f, 205.0f), 18.0f, Color4(Color3::red(), 0.7), Color4(Color3::black(), 0.7));
+	m_font->draw2D(renderDevice, "Remove all geodesic/parallel planes: l",
+		Point2(renderDevice->width() - 480.0f, 235.0f), 18.0f, Color4(Color3::red(), 0.7), Color4(Color3::black(), 0.7));
 	m_font->draw2D(renderDevice, "Spinning ball magick magnet: m",
-		Point2(renderDevice->width() - 450.0f, 205.0f), 20.0f, Color4(Color3::red(), 0.7), Color4(Color3::black(), 0.7));
+		Point2(renderDevice->width() - 480.0f, 265.0f), 18.0f, Color4(Color3::red(), 0.7), Color4(Color3::black(), 0.7));
 	m_font->draw2DWordWrap(renderDevice, 400, "(the infamous magick physical force that makes the atmosphere stray from it's natural path)",
-		Point2(renderDevice->width() - 450.0f, 230.0f), 16.0f, Color4(Color3::red(), 0.7), Color4(Color3::black(), 0.7));
+		Point2(renderDevice->width() - 480.0f, 290.0f), 14.0f, Color4(Color3::red(), 0.7), Color4(Color3::black(), 0.7));
 	m_font->draw2D(renderDevice, String("MAGICK MAGNET: ") + String(Particle::GLOBE_MAGICK_BELIEVER ? "ON" : "OFF"),
-		Point2(renderDevice->width() - 450.0f, renderDevice->height() - 100), 24.0f, Color4(Color3::red(), 0.7), Color4(Color3::black(), 0.7));
+		Point2(renderDevice->width() - 480.0f, renderDevice->height() - 100), 24.0f, Color4(Color3::red(), 0.7), Color4(Color3::black(), 0.7));
 }

@@ -66,6 +66,22 @@
 				receivesShadows = true;
 			};
 		};
+
+		plane_geodesic = VisibleEntity {
+			model = "circle_geo";
+			expressiveLightScatteringProperties = ExpressiveLightScatteringProperties {
+				castsShadows = false;
+				receivesShadows = false;
+			};
+		};
+
+		plane_parallel = VisibleEntity {
+			model = "circle_par";
+			expressiveLightScatteringProperties = ExpressiveLightScatteringProperties {
+				castsShadows = false;
+				receivesShadows = false;
+			};
+		};
     }; 
         
     models = {
@@ -96,6 +112,16 @@
 
 		circle_mag = ArticulatedModel::Specification {
 			filename = "plane/circle-mag.obj";
+			scale = 1;
+		};
+
+		circle_geo = ArticulatedModel::Specification {
+			filename = "plane/plane-geodesic.obj";
+			scale = 1;
+		};
+
+		circle_par = ArticulatedModel::Specification {
+			filename = "plane/plane-parallel.obj";
 			scale = 1;
 		};
     };
